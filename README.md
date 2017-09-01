@@ -1,136 +1,65 @@
-# CarND-Path-Planning-Project
-Self-Driving Car Engineer Nanodegree Program
-   
-### Simulator.
-You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases).
-
-### Goals
-In this project your goal is to safely navigate around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. You will be provided the car's localization and sensor fusion data, there is also a sparse map list of waypoints around the highway. The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when possible, note that other cars will try to change lanes too. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless going from one lane to another. The car should be able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop. Also the car should not experience total acceleration over 10 m/s^2 and jerk that is greater than 50 m/s^3.
-
-#### The map of the highway is in data/highway_map.txt
-Each waypoint in the list contains  [x,y,s,dx,dy] values. x and y are the waypoint's map coordinate position, the s value is the distance along the road to get to that waypoint in meters, the dx and dy values define the unit normal vector pointing outward of the highway loop.
-
-The highway's waypoints loop around so the frenet s value, distance along the road, goes from 0 to 6945.554.
-
-## Basic Build Instructions
-
-1. Clone this repo.
-2. Make a build directory: `mkdir build && cd build`
-3. Compile: `cmake .. && make`
-4. Run it: `./path_planning`.
-
-Here is the data provided from the Simulator to the C++ Program
-
-#### Main car's localization Data (No Noise)
-
-["x"] The car's x position in map coordinates
-
-["y"] The car's y position in map coordinates
-
-["s"] The car's s position in frenet coordinates
-
-["d"] The car's d position in frenet coordinates
-
-["yaw"] The car's yaw angle in the map
-
-["speed"] The car's speed in MPH
-
-#### Previous path data given to the Planner
-
-//Note: Return the previous list but with processed points removed, can be a nice tool to show how far along
-the path has processed since last time. 
-
-["previous_path_x"] The previous list of x points previously given to the simulator
-
-["previous_path_y"] The previous list of y points previously given to the simulator
-
-#### Previous path's end s and d values 
-
-["end_path_s"] The previous list's last point's frenet s value
-
-["end_path_d"] The previous list's last point's frenet d value
-
-#### Sensor Fusion Data, a list of all other car's attributes on the same side of the road. (No Noise)
-
-["sensor_fusion"] A 2d vector of cars and then that car's [car's unique ID, car's x position in map coordinates, car's y position in map coordinates, car's x velocity in m/s, car's y velocity in m/s, car's s position in frenet coordinates, car's d position in frenet coordinates. 
-
-## Details
-
-1. The car uses a perfect controller and will visit every (x,y) point it recieves in the list every .02 seconds. The units for the (x,y) points are in meters and the spacing of the points determines the speed of the car. The vector going from a point to the next point in the list dictates the angle of the car. Acceleration both in the tangential and normal directions is measured along with the jerk, the rate of change of total Acceleration. The (x,y) point paths that the planner recieves should not have a total acceleration that goes over 10 m/s^2, also the jerk should not go over 50 m/s^3. (NOTE: As this is BETA, these requirements might change. Also currently jerk is over a .02 second interval, it would probably be better to average total acceleration over 1 second and measure jerk from that.
-
-2. There will be some latency between the simulator running and the path planner returning a path, with optimized code usually its not very long maybe just 1-3 time steps. During this delay the simulator will continue using points that it was last given, because of this its a good idea to store the last points you have used so you can have a smooth transition. previous_path_x, and previous_path_y can be helpful for this transition since they show the last points given to the simulator controller with the processed points already removed. You would either return a path that extends this previous path or make sure to create a new path that has a smooth transition with this last path.
-
-## Tips
-
-A really helpful resource for doing this project and creating smooth trajectories was using http://kluge.in-chemnitz.de/opensource/spline/, the spline function is in a single hearder file is really easy to use.
+# Path Planning Project
+[CarND Term 3 Path Planning Project]
+(https://github.com/udacity/CarND-Path-Planning-Project)
 
 ---
 
-## Dependencies
+## Overview
+In this project, the aim is to implement a path planning model to safely navigate around a virtual highway with traffic.
 
-* cmake >= 3.5
- * All OSes: [click here for installation instructions](https://cmake.org/install/)
-* make >= 4.1
-  * Linux: make is installed by default on most Linux distros
-  * Mac: [install Xcode command line tools to get make](https://developer.apple.com/xcode/features/)
-  * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
-* gcc/g++ >= 5.4
-  * Linux: gcc / g++ is installed by default on most Linux distros
-  * Mac: same deal as make - [install Xcode command line tools]((https://developer.apple.com/xcode/features/)
-  * Windows: recommend using [MinGW](http://www.mingw.org/)
-* [uWebSockets](https://github.com/uWebSockets/uWebSockets)
-  * Run either `install-mac.sh` or `install-ubuntu.sh`.
-  * If you install from source, checkout to commit `e94b6e1`, i.e.
-    ```
-    git clone https://github.com/uWebSockets/uWebSockets 
-    cd uWebSockets
-    git checkout e94b6e1
-    ```
+### Project video
 
-## Editor Settings
+[![Path Planning](http://img.youtube.com/vi/MVja8Lsb7NI/0.jpg)](http://www.youtube.com/watch?v=MVja8Lsb7NI)
 
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
+## The Project
+In order to implement Path Planning model, the main.cpp file was modified. Vehicle class was added to the file. The spline.h was included in the project. The Vehicle class was responsible for generating trajectories and calculating  costs of the trajectories.
 
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
+### Required Steps For Path Planning
 
-## Code Style
+#### Prediction
+Prediction is the first step of path planning. It involves, predicting the behavior of other vehicles, and estimating their location at a time step in the future. Because of the time limitations, predictions only performed by increasing the s values of other cars, and the d value of each other car assumed to be constant in each step. The provided vx and vy values were combined in a single v, and this v value used to calculate the s value in the future.
 
-Please (do your best to) stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
+#### Trajectory Generation
+Trajectory Generation is the second step and probably the most challenging step of path planning. During generation step, maximum acceleration and maximum velocity values were set in advance. The interactions with the other cars were calculated, such as closest approach, and lowest time to collide. In addition, other penalties added for not driving at the target speed, changing lanes, driving at side lanes, canceling the previous action, driving in an occupied lane.
 
-## Project Instructions and Rubric
+#### Jerk Minimization
+Jerk Minimization is an important aspect of path planning, however, it was not implemented in this projects due to the highly challenging transitions between Frenet and XY coordinates.
 
-Note: regardless of the changes you make, your project must be buildable using
-cmake and make!
+### Data From The Simulator
+The simulator provides the localization data, previously generated path data, and the sensor fusion data. At each step, new path data was added to the previously generated path data. In order to predict the behavior of the other cars, their velocity was calculated as the square root of the sum of the squares of vx and vy. The location of another vehicle was calculated by adding the multiplication of that velocity and the time to the current s value of the vehicle. The d value of the car assumed to be constant. This assumption was risky; however, lowering the PLANNING_STEPS variable provide a chance to change the behavior in order to prevent collision.
 
+### Trajectory Generation
+Trajectory Generation code was based on the provided Python solution to the "Implement Behavior Planner in C++" quiz in Behavior Planning Lesson. It was quite challenging to switch to continuous space from a discrete space. In addition, the Prepare Lane Change Left and Prepare Lane Change Right states were added to the model. Still, the most challenging part was implementing a recursive state function, since at each step different states can be selected.
 
-## Call for IDE Profiles Pull Requests
+The trajectory generation was not complete since it can only assume one acceleration for each state in each step. Adding different acceleration options probably provide better solutions for passing the other vehicles and changing lanes.
 
-Help your fellow students!
+The PLANNING_HORIZON parameter sets the number of states that the trajectory generator can plan in each step. Increasing the number to a value greater than 5 results in very slow calculations. In order to decrease the running time, when a collision became more likely, the cost for that trajectory assigned to the MAXCOST, and the following states were not considered. Similarly, when a cost for a trajectory was less than 5, that trajectory was selected directly without calculating the cost for other trajectories. This situation only occurs when the vehicle is in the center lane, and there are no other vehicles in front of it. In other words, the center lane is not occupied and the vehicle is in the center lane.
 
-We decided to create Makefiles with cmake to keep this project as platform
-agnostic as possible. Similarly, we omitted IDE profiles in order to ensure
-that students don't feel pressured to use one IDE or another.
+### Cost Calculation
+#### Prepare Without Change Cost
+When there is a PLCL or PLCR without a following LCL or LCR, there is a penalty. Because this will lead into a deceleration with no improvement.
 
-However! I'd love to help people get up and running with their IDEs of choice.
-If you've created a profile for an IDE that you think other students would
-appreciate, we'd love to have you add the requisite profile files and
-instructions to ide_profiles/. For example if you wanted to add a VS Code
-profile, you'd add:
+#### Inefficiency Cost
+The penalty for not driving at the target speed. In order to prevent following another car which drives fast, but not at the target speed, a constant cost is added to the cost as a function of the difference between the average speed of the generated trajectory and the target speed.
 
-* /ide_profiles/vscode/.vscode
-* /ide_profiles/vscode/README.md
+#### Near Cost
+The penalty for collision, or getting close to a collision. It is based on the minimum distance with the vehicle and the other vehicles.
 
-The README should explain what the profile does, how to take advantage of it,
-and how to install it.
+#### Occupied Cost
+The penalty for driving in an occupied lane. It is based on the time to reach to the vehicle in front of the vehicle, assuming the vehicle drives at the target speed.
 
-Frankly, I've never been involved in a project with multiple IDE profiles
-before. I believe the best way to handle this would be to keep them out of the
-repo root to avoid clutter. My expectation is that most profiles will include
-instructions to copy files to a new location to get picked up by the IDE, but
-that's just a guess.
+#### Buffer Cost
+Assuming there is no collision, how long will it take to collide is calculated, and if that value is greater than the DESIRED_BUFFER, this cost will be greater than 0.
 
-One last note here: regardless of the IDE used, every submitted project must
-still be compilable with cmake and make./
+#### Change Lane Cost
+Calculated to minimize the total number of lane changes.
+
+#### At Lane Cost
+If the vehicle is in the side lanes, a penalty cost will be added.
+
+### Generating Waypoints
+During trajectory generation, the acceleration values were calculated for the vehicle for each step. These values were used during generating waypoints.
+
+The spline function was used to calculate y values as a function of x values. As provided in the walkthrough video, the last point of the vehicle and the point before that were used as the first two points. Three following points were also added to the spline. These three points were obtained by using the target_s and target_d values. In order to prevent exceeding maximum acceleration, the maximum difference between d values in the sequential points was set to 4.0.
+
+Using the constructed spline, x value was incremented step by step, and the corresponding y value was calculated.
